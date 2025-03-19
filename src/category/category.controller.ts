@@ -16,14 +16,14 @@ import { ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { Roles } from 'src/auth/roles.decorator';
-import { Role } from '@prisma/client';
+import { Role } from 'src/user/dto/create-user.dto';
 
 @ApiBearerAuth()
 @Controller('category')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
-  @Roles(Role.ADMIN)
+  @Roles(Role.admin)
   @UseGuards(RolesGuard)
   @UseGuards(AuthGuard)
   @Post()
@@ -45,7 +45,7 @@ export class CategoryController {
     return this.categoryService.findOne(+id);
   }
 
-  @Roles(Role.ADMIN)
+  @Roles(Role.admin)
   @UseGuards(RolesGuard)
   @UseGuards(AuthGuard)
   @Patch(':id')
@@ -56,7 +56,7 @@ export class CategoryController {
     return this.categoryService.update(+id, updateCategoryDto);
   }
 
-  @Roles(Role.ADMIN)
+  @Roles(Role.admin)
   @UseGuards(RolesGuard)
   @UseGuards(AuthGuard)
   @Delete(':id')

@@ -14,7 +14,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ApiQuery } from '@nestjs/swagger';
 import { Roles } from 'src/auth/roles.decorator';
-import { Role } from '@prisma/client';
+import { Role } from 'src/user/dto/create-user.dto';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { AuthGuard } from 'src/auth/auth.guard';
 
@@ -22,7 +22,7 @@ import { AuthGuard } from 'src/auth/auth.guard';
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
-  @Roles(Role.ADMIN)
+  @Roles(Role.admin)
   @UseGuards(RolesGuard)
   @UseGuards(AuthGuard)
   @Post()
@@ -48,7 +48,7 @@ export class ProductController {
     return this.productService.findOne(+id);
   }
 
-  @Roles(Role.ADMIN)
+  @Roles(Role.admin)
   @UseGuards(RolesGuard)
   @UseGuards(AuthGuard)
   @Patch(':id')
@@ -56,7 +56,7 @@ export class ProductController {
     return this.productService.update(+id, updateProductDto);
   }
 
-  @Roles(Role.ADMIN)
+  @Roles(Role.admin)
   @UseGuards(RolesGuard)
   @UseGuards(AuthGuard)
   @Delete(':id')

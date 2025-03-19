@@ -31,6 +31,10 @@ export class CategoryService {
         include: { Product: true },
       });
 
+      if (!data.length) {
+        throw new NotFoundException('Not found categories');
+      }
+
       return { data };
     } catch (error) {
       return new BadRequestException(error.message);
@@ -43,6 +47,10 @@ export class CategoryService {
         where: { id },
         include: { Product: true },
       });
+
+      if (!data) {
+        throw new NotFoundException('Not found category');
+      }
       return { data };
     } catch (error) {
       return new BadRequestException(error.message);
@@ -53,7 +61,7 @@ export class CategoryService {
     try {
       let data = await this.prisma.category.findFirst({ where: { id } });
       if (!data) {
-        return new NotFoundException('Not found data');
+        return new NotFoundException('Not found category');
       }
 
       let updated = await this.prisma.category.update({
@@ -71,7 +79,7 @@ export class CategoryService {
     try {
       let data = await this.prisma.category.delete({ where: { id } });
       if (!data) {
-        return new NotFoundException('Not found data');
+        return new NotFoundException('Not found category');
       }
       return { data };
     } catch (error) {

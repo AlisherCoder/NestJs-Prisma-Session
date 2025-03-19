@@ -64,8 +64,9 @@ export class ProductService {
       });
 
       if (!data.length) {
-        return new NotFoundException('Not found data');
+        return new NotFoundException('Not found products');
       }
+
       return { data };
     } catch (error) {
       return new BadRequestException(error.message);
@@ -79,6 +80,10 @@ export class ProductService {
         include: { category: true },
       });
 
+      if (!data) {
+        throw new NotFoundException('Not found product');
+      }
+
       return { data };
     } catch (error) {
       return new BadRequestException(error.message);
@@ -89,7 +94,7 @@ export class ProductService {
     try {
       let data = await this.prisma.product.findFirst({ where: { id } });
       if (!data) {
-        return new NotFoundException('Not found data');
+        return new NotFoundException('Not found product');
       }
 
       let updated = await this.prisma.product.update({
@@ -114,7 +119,7 @@ export class ProductService {
     try {
       let data = await this.prisma.product.delete({ where: { id } });
       if (!data) {
-        return new NotFoundException('Not found data');
+        return new NotFoundException('Not found product');
       }
 
       let oldImage = path.join('uploads', data['image']);

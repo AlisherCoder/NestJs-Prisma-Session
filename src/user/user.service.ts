@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { CreateUserDto, LoginUserDto } from './dto/create-user.dto';
@@ -91,19 +92,60 @@ export class UserService {
 
       let data = await this.prisma.user.findFirst({ where: { id: user?.id } });
 
-      let sessions = await this.prisma.session.findMany({
-        where: { userId: data?.id },
-      });
-
-      return { data, sessions };
+      return { data };
     } catch (error) {
       return new BadRequestException(error.message);
     }
   }
 
-  async findAll() {
+  async getSessions(req: Request) {
+    let user = req['user'];
     try {
-      let data = await this.prisma.user.findMany();
+      let data = await this.prisma.session.findFirst({
+        where: { userId: user?.id },
+      });
+
+      return { data };
+    } catch (error) {
+      return new BadRequestException(error.message);
+    }
+  }
+
+  async delSession(id: number) {
+    try {
+      let data = await this.prisma.session.delete({ where: { id } });
+
+      return { data };
+    } catch (error) {
+      return new BadRequestException(error.message);
+    }
+  }
+
+  async findAll(query: any) {
+    let { orderBy, sortBy = 'name', limit = 10, page = 1, ...filter } = query;
+    let search: any = {};
+
+    if (filter.name) {
+      search.name = { mode: 'insensitive', contains: filter.name };
+    }
+
+    if (filter.email) {
+      search.email = { mode: 'insensitive', contains: filter.email };
+    }
+
+    try {
+      let data = await this.prisma.user.findMany({
+        skip: (page - 1) * limit,
+        take: Number(limit),
+        orderBy: {
+          [sortBy]: orderBy,
+        },
+        where: search,
+      });
+
+      if (!data.length) {
+        return new NotFoundException('Not found users');
+      }
 
       return { data };
     } catch (error) {
